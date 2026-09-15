@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { ArrowLeft, Eye, EyeOff, Lock } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Lock, User } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Field, FieldError, FieldLabel } from './ui/field';
@@ -14,17 +14,18 @@ type Props = {
 };
 
 export function AdminLogin({ onBack, onSuccess }: Props) {
-  const [passcode, setPasscode] = React.useState('');
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [show, setShow] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (tryAdminLogin(passcode.trim())) {
+    if (tryAdminLogin(username.trim(), password)) {
       setError(null);
       onSuccess();
     } else {
-      setError('Incorrect passcode. Please try again.');
+      setError('Incorrect username or password. Please try again.');
     }
   };
 
@@ -36,29 +37,47 @@ export function AdminLogin({ onBack, onSuccess }: Props) {
             <Lock size={22} className="text-[#ED9420]" />
           </div>
           <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
-          <CardDescription>Enter the admin passcode to view calculations</CardDescription>
+          <CardDescription>Enter your username and password to view calculations</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-4">
-            <Field data-invalid={Boolean(error)}>
-              <FieldLabel htmlFor="admin-passcode">Passcode</FieldLabel>
+            <Field>
+              <FieldLabel htmlFor="admin-username">Username</FieldLabel>
               <div className="relative">
+                <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  id="admin-passcode"
-                  type={show ? 'text' : 'password'}
-                  value={passcode}
+                  id="admin-username"
+                  type="text"
+                  value={username}
                   onChange={(e) => {
-                    setPasscode(e.target.value);
+                    setUsername(e.target.value);
                     setError(null);
                   }}
-                  placeholder="Enter passcode"
+                  placeholder="Enter username"
+                  autoComplete="username"
+                  className="pl-10"
+                />
+              </div>
+            </Field>
+            <Field data-invalid={Boolean(error)}>
+              <FieldLabel htmlFor="admin-password">Password</FieldLabel>
+              <div className="relative">
+                <Input
+                  id="admin-password"
+                  type={show ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError(null);
+                  }}
+                  placeholder="Enter password"
                   autoComplete="current-password"
                   aria-invalid={Boolean(error)}
                   className="pr-10"
                 />
                 <button
                   type="button"
-                  aria-label={show ? 'Hide passcode' : 'Show passcode'}
+                  aria-label={show ? 'Hide password' : 'Show password'}
                   onClick={() => setShow((v) => !v)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >

@@ -45,21 +45,21 @@ export function SiteHeader() {
   const [mobileProjectsOpen, setMobileProjectsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-neutral-800 bg-[#F7FAFC] dark:bg-neutral-950">
+    <header className="sticky top-0 z-50 w-full overflow-x-clip border-b border-gray-200 dark:border-neutral-800 bg-[#F7FAFC] dark:bg-neutral-950">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex h-[100px] items-center justify-between gap-4">
+        <div className="flex h-[100px] items-center justify-between gap-2 sm:gap-4">
           {/* Brand */}
-          <a href={`${SITE_URL}/`} className="flex items-center gap-3 shrink-0">
+          <a href={`${SITE_URL}/`} className="flex items-center gap-3 shrink min-w-0">
             <img
               src={LOGO_URL}
               alt="Bismark Lanka Engineering"
-              className="h-14 w-auto max-w-44 object-contain"
+              className="h-12 sm:h-14 w-auto max-w-32 sm:max-w-44 object-contain shrink-0"
             />
-            <span className="flex flex-col leading-tight">
-              <span className={`text-base font-bold text-[#2D3748] dark:text-neutral-100 ${NAV_FONT}`}>
+            <span className="flex flex-col leading-tight min-w-0">
+              <span className={`truncate text-sm sm:text-base font-bold text-[#2D3748] dark:text-neutral-100 ${NAV_FONT}`}>
                 Bismark Lanka Engineering
               </span>
-              <span className={`text-xs text-[#2D3748]/70 dark:text-neutral-400 ${NAV_FONT}`}>
+              <span className={`hidden min-[420px]:block truncate text-xs text-[#2D3748]/70 dark:text-neutral-400 ${NAV_FONT}`}>
                 Construction Company in Sri Lanka
               </span>
             </span>

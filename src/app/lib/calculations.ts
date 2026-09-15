@@ -1,19 +1,13 @@
 import type { CalculatorData } from '../App';
+import { getRoomSizes } from './roomConfig';
 
 export const SQFT_PER_PERCH = 272.25;
 export const BUILDABLE_RATIO = 0.6;
 export const CONSTRUCTION_RATE = 10982;
 export const CLAY_TILE_RATE = 11090;
 
-const ROOM_SQFT: Record<string, number> = {
-  livingAreas: 350,
-  diningAreas: 180,
-  pantries: 195,
-  kitchens: 180,
-  parkings: 144,
-  rooms: 144,
-  bathrooms: 40,
-};
+// Single source of truth lives in roomConfig (admin-editable). Kept here for compat.
+export { DEFAULT_ROOM_SIZES } from './roomConfig';
 
 export function getRoofName(roofType: string): string {
   switch (roofType) {
@@ -46,9 +40,10 @@ export function computeTotals(data: CalculatorData): QuoteTotals {
   const allowedSqft = usableLandSqft * data.stories;
 
   let raw = 0;
+  const sizes = getRoomSizes();
   data.floors.forEach((floor) => {
-    (Object.keys(ROOM_SQFT) as (keyof typeof ROOM_SQFT & keyof typeof floor)[]).forEach((key) => {
-      raw += (floor[key] as number) * ROOM_SQFT[key];
+    (Object.keys(sizes) as (keyof typeof sizes & keyof typeof floor)[]).forEach((key) => {
+      raw += (floor[key] as number) * sizes[key];
     });
   });
   const totalSqft = raw * 1.05;

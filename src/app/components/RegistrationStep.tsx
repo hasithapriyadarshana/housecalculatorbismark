@@ -106,8 +106,8 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
         <div className="grid w-full items-center gap-10 md:grid-cols-2">
           <div>
             <CardHeader className="px-0 pt-0">
-        <CardTitle className="text-3xl font-bold">Let&apos;s Start Your House Estimation</CardTitle>
-        <CardDescription>Please provide your contact details to begin</CardDescription>
+        <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">Let&apos;s Start Your House Estimation</CardTitle>
+        <CardDescription className="text-gray-500 dark:text-neutral-400">Please provide your contact details to begin</CardDescription>
       </CardHeader>
       <CardContent className="px-0 pb-0">
         <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="w-full space-y-6">
@@ -116,16 +116,16 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
+                <FieldLabel htmlFor={field.name} className="text-gray-700 dark:text-neutral-200">Full Name</FieldLabel>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-400" size={18} />
                   <Input
                     {...field}
                     id={field.name}
                     aria-invalid={fieldState.invalid}
                     placeholder="Enter your full name"
                     autoComplete="name"
-                    className="pl-10"
+                    className="pl-10 bg-gray-50 dark:bg-white/10 border-gray-200 dark:border-white/15 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus-visible:border-[#ED9420] focus-visible:ring-[#ED9420]/30"
                   />
                 </div>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -138,9 +138,9 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Phone Number</FieldLabel>
+                <FieldLabel htmlFor={field.name} className="text-gray-700 dark:text-neutral-200">Phone Number</FieldLabel>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-400" size={18} />
                   <Input
                     {...field}
                     id={field.name}
@@ -148,7 +148,7 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
                     aria-invalid={fieldState.invalid}
                     placeholder="+94 77 XXX XXXX"
                     autoComplete="tel"
-                    className="pl-10"
+                    className="pl-10 bg-gray-50 dark:bg-white/10 border-gray-200 dark:border-white/15 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus-visible:border-[#ED9420] focus-visible:ring-[#ED9420]/30"
                   />
                 </div>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -161,9 +161,9 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Email Address</FieldLabel>
+                <FieldLabel htmlFor={field.name} className="text-gray-700 dark:text-neutral-200">Email Address</FieldLabel>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-400" size={18} />
                   <Input
                     {...field}
                     id={field.name}
@@ -171,7 +171,7 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
                     aria-invalid={fieldState.invalid}
                     placeholder="example@gmail.com"
                     autoComplete="email"
-                    className="pl-10"
+                    className="pl-10 bg-gray-50 dark:bg-white/10 border-gray-200 dark:border-white/15 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus-visible:border-[#ED9420] focus-visible:ring-[#ED9420]/30"
                   />
                 </div>
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -184,7 +184,7 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Building Location</FieldLabel>
+                <FieldLabel htmlFor={field.name} className="text-gray-700 dark:text-neutral-200">Building Location</FieldLabel>
                 <LocationAutocomplete
                   id={field.name}
                   value={field.value}
@@ -204,7 +204,7 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
         </form>
         </CardContent>
           </div>
-          <div className="mx-auto w-full max-w-sm md:max-w-none">
+          <div className="mx-auto w-full max-w-sm md:max-w-none rounded-2xl border border-orange-100/80 dark:border-white/10 bg-gradient-to-br from-orange-50 via-amber-50/60 to-white dark:from-white/[0.06] dark:via-white/[0.02] dark:to-transparent p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-none">
             <ConstructionIllustration />
           </div>
         </div>

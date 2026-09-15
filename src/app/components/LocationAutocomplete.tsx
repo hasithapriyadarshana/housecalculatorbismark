@@ -195,7 +195,7 @@ export function LocationAutocomplete({
     <div ref={rootRef} className="relative">
       <div className="relative">
         <MapPin
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-400"
           size={18}
         />
         <Input
@@ -207,7 +207,7 @@ export function LocationAutocomplete({
           role="combobox"
           aria-expanded={open}
           aria-controls={open ? `${id}-location-listbox` : undefined}
-          className="pl-10 pr-10"
+          className="pl-10 pr-10 bg-gray-50 dark:bg-white/10 border-gray-200 dark:border-white/15 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus-visible:border-[#ED9420] focus-visible:ring-[#ED9420]/30"
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           onFocus={() => {

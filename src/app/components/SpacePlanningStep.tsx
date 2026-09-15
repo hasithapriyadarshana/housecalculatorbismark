@@ -3,6 +3,7 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { CalculatorData } from '../App';
 import { FloorPlanning } from './FloorPlanning';
+import { totalSqftForFloors } from '../lib/roomConfig';
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -20,17 +21,7 @@ export function SpacePlanningStep({ data, onUpdate, onNext, onPrev }: Props) {
   const allowedSqft = usableLandSqft * data.stories;
 
   const calculateTotalSqft = () => {
-    let total = 0;
-    data.floors.forEach((floor) => {
-      total += floor.livingAreas * 350;
-      total += floor.diningAreas * 180;
-      total += floor.pantries * 195;
-      total += floor.kitchens * 180;
-      total += floor.parkings * 144;
-      total += floor.rooms * 144;
-      total += floor.bathrooms * 40;
-    });
-    return total * 1.05;
+    return totalSqftForFloors(data.floors);
   };
 
   const totalSqft = calculateTotalSqft();
@@ -72,8 +63,8 @@ export function SpacePlanningStep({ data, onUpdate, onNext, onPrev }: Props) {
           ))}
         </div>
 
-        <div className="flex gap-4">
-          <Button type="button" variant="outline" onClick={onPrev} className="px-6 py-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <Button type="button" variant="outline" onClick={onPrev} className="px-6 py-6 w-full sm:w-auto">
             <ArrowLeft size={20} />
             Previous
           </Button>
