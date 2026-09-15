@@ -10,6 +10,7 @@ import { LiveSummary } from './components/LiveSummary';
 import { AdminDashboard } from './components/AdminDashboard';
 import { AdminLogin } from './components/AdminLogin';
 import { SiteHeader } from './components/SiteHeader';
+import { SiteFooter } from './components/SiteFooter';
 import { Toaster } from './components/ui/sonner';
 import { isAdminUnlocked, lockAdmin } from './lib/adminAuth';
 import { newSessionId, upsertCalculation } from './lib/calculationStore';
@@ -194,6 +195,7 @@ export default function App() {
           </>
         )}
       </div>
+      <SiteFooter />
     </div>
   );
 }
