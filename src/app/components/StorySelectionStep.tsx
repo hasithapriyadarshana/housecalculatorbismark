@@ -99,8 +99,8 @@ export function StorySelectionStep({ stories, onUpdate, onNext, onPrev }: Props)
             )}
           />
 
-          <div className="flex gap-4">
-            <Button type="button" variant="outline" onClick={onPrev} className="px-6 py-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <Button type="button" variant="outline" onClick={onPrev} className="px-6 py-6 w-full sm:w-auto">
               <ArrowLeft size={20} />
               Previous
             </Button>

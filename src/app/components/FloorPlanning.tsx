@@ -1,5 +1,6 @@
 import { Minus, Plus } from 'lucide-react';
 import { FloorData } from '../App';
+import { ROOM_META, useRoomConfig } from '../lib/roomConfig';
 
 type Props = {
   floorName: string;
@@ -7,17 +8,10 @@ type Props = {
   onUpdate: (data: FloorData) => void;
 };
 
-const roomTypes = [
-  { key: 'livingAreas' as keyof FloorData, label: 'Living Area', size: 350 },
-  { key: 'diningAreas' as keyof FloorData, label: 'Dining Area', size: 180 },
-  { key: 'pantries' as keyof FloorData, label: 'Pantry', size: 195 },
-  { key: 'kitchens' as keyof FloorData, label: 'Kitchen Area', size: 180 },
-  { key: 'parkings' as keyof FloorData, label: 'Parking for Vehicle', size: 144 },
-  { key: 'rooms' as keyof FloorData, label: 'Room', size: 144 },
-  { key: 'bathrooms' as keyof FloorData, label: 'Bathroom', size: 40 },
-];
-
 export function FloorPlanning({ floorName, floorData, onUpdate }: Props) {
+  const { sizes, showSqft } = useRoomConfig();
+  const roomTypes = ROOM_META.map((r) => ({ ...r, size: sizes[r.key] }));
+
   const updateCount = (key: keyof FloorData, delta: number) => {
     const currentValue = floorData[key] as number;
     const newValue = Math.max(0, Math.min(10, currentValue + delta));
@@ -31,20 +25,22 @@ export function FloorPlanning({ floorName, floorData, onUpdate }: Props) {
   };
 
   return (
-    <div className="border-2 border-gray-200 dark:border-neutral-800 rounded-lg p-6 bg-gradient-to-br from-gray-50 to-white dark:from-neutral-900 dark:to-neutral-900">
+    <div className="border-2 border-gray-200 dark:border-neutral-800 rounded-lg p-4 sm:p-6 bg-gradient-to-br from-gray-50 to-white dark:from-neutral-900 dark:to-neutral-900 min-w-0 overflow-x-clip">
       <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-4">{floorName}</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {roomTypes.map((room) => {
           const count = floorData[room.key] as number;
           return (
-            <div key={room.key} className="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg p-4">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-neutral-100">{room.label}</p>
-                  <p className="text-sm text-gray-500 dark:text-neutral-400">{room.size} sqft each</p>
+            <div key={room.key} className="bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg p-4 min-w-0">
+              <div className="flex justify-between items-start gap-2 mb-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-gray-900 dark:text-neutral-100 break-words">{room.label}</p>
+                  {showSqft && (
+                    <p className="text-sm text-gray-500 dark:text-neutral-400 whitespace-nowrap">{room.size} sqft each</p>
+                  )}
                 </div>
-                <p className="text-sm font-semibold text-[#ED9420]">
+                <p className="text-sm font-semibold text-[#ED9420] shrink-0 text-right">
                   {(count * room.size).toLocaleString()} sqft
                 </p>
               </div>
@@ -78,9 +74,9 @@ export function FloorPlanning({ floorName, floorData, onUpdate }: Props) {
       </div>
 
       <div className="bg-[#ED9420]/10 border border-[#ED9420]/30 rounded-lg p-4">
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-gray-900 dark:text-neutral-100">{floorName} Total:</span>
-          <span className="text-xl font-bold text-[#ED9420]">{calculateFloorTotal().toLocaleString()} sqft</span>
+        <div className="flex justify-between items-center gap-2">
+          <span className="font-semibold text-gray-900 dark:text-neutral-100 min-w-0 break-words">{floorName} Total:</span>
+          <span className="text-lg sm:text-xl font-bold text-[#ED9420] shrink-0 text-right">{calculateFloorTotal().toLocaleString()} sqft</span>
         </div>
       </div>
     </div>

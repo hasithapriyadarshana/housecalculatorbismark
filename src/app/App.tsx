@@ -102,15 +102,10 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950">
+    <div className="min-h-screen overflow-x-clip bg-gray-50 dark:bg-neutral-950">
       <Toaster position="top-center" richColors />
       <SiteHeader />
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-neutral-100 mb-2">House Building Cost Calculator</h1>
-          <p className="text-gray-600 dark:text-neutral-400">Plan your dream house with accurate cost estimates</p>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-4 py-8 overflow-x-clip">
         {view === 'admin' ? (
           adminUnlocked ? (
             <AdminDashboard
@@ -130,10 +125,10 @@ export default function App() {
           <>
             <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 items-start">
-          <div className={currentStep <= 2 ? 'lg:col-span-3' : 'lg:col-span-2'}>
-            <div className={`${currentStep === 1 ? 'bg-[#171717]' : 'bg-white dark:bg-neutral-900'} rounded-lg shadow-lg p-8 flex justify-center`}>
-              <div className={`w-full ${currentStep === 1 ? 'max-w-5xl' : 'max-w-2xl'} mx-auto flex flex-col justify-center min-h-[420px] ${currentStep === 1 ? 'dark' : ''}`}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 items-start min-w-0">
+          <div className={`${currentStep <= 2 ? 'lg:col-span-3' : 'lg:col-span-2'} min-w-0`}>
+            <div className={`${currentStep === 1 ? 'bg-white dark:bg-[#171717] border border-orange-100/80 dark:border-white/10 bg-gradient-to-b from-orange-50/60 via-white to-white dark:from-white/[0.04] dark:via-[#171717] dark:to-[#171717]' : 'bg-white dark:bg-neutral-900 border border-transparent'} rounded-2xl shadow-[0_8px_30px_-12px_rgba(237,148,32,0.25)] dark:shadow-lg p-4 sm:p-8 flex justify-center overflow-x-clip min-w-0`}>
+              <div className={`w-full ${currentStep === 1 ? 'max-w-5xl' : 'max-w-2xl'} mx-auto flex flex-col justify-center min-h-[420px] min-w-0`}>
               {currentStep === 1 && (
                 <RegistrationStep
                   data={data.user}
@@ -187,8 +182,8 @@ export default function App() {
           </div>
 
           {currentStep > 2 && (
-            <div className="lg:col-span-1">
-              <LiveSummary data={data} currentStep={currentStep} />
+            <div className="lg:col-span-1 min-w-0 w-full">
+              <LiveSummary data={data} currentStep={currentStep} quoteId={sessionId} />
             </div>
           )}
         </div>

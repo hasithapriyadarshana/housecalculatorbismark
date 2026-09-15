@@ -1,3 +1,16 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Mobile safety: never allow a horizontal scrollbar — clip page-level overflow
+   (`clip` keeps `position: sticky` working, unlike `hidden`). */
+html,
+body {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+#root {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
