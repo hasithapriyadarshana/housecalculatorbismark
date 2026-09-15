@@ -1,5 +1,34 @@
-import { User, Phone, Mail, MapPin } from 'lucide-react';
+'use client';
+
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm, type FieldErrors } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
+import { User, Phone, Mail, CheckCircle2Icon, InfoIcon } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Button } from './ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Field, FieldError, FieldLabel } from './ui/field';
+import { Input } from './ui/input';
+import { LocationAutocomplete } from './LocationAutocomplete';
 import { UserData } from '../App';
+
+const formSchema = z.object({
+  fullName: z.string().min(1, 'Full name is required.').min(2, 'Enter your full name.'),
+  phone: z
+    .string()
+    .min(1, 'Phone number is required.')
+    .refine((v) => /^[0-9+\-\s()]+$/.test(v), 'Enter a valid phone number.')
+    .refine((v) => {
+      const digits = v.replace(/[\s\-()]/g, '');
+      return /^(\+94|94|0)\d{9}$/.test(digits);
+    }, 'Enter a valid number with country code, e.g. +94771234567 or 0771234567.'),
+  email: z.string().min(1, 'Email is required.').email({ message: 'Please enter a valid email address.' }),
+  location: z.string().min(1, 'Building location is required.').min(2, 'Enter your building location.'),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 type Props = {
   data: UserData;
@@ -8,86 +37,168 @@ type Props = {
 };
 
 export function RegistrationStep({ data, onUpdate, onNext }: Props) {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (data.fullName && data.phone && data.email && data.location) {
-      onNext();
-    }
-  };
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fullName: data.fullName ?? '',
+      phone: data.phone ?? '',
+      email: data.email ?? '',
+      location: data.location ?? '',
+    },
+  });
+
+  // Keep RHF in sync if parent data changes externally
+  React.useEffect(() => {
+    form.reset({
+      fullName: data.fullName ?? '',
+      phone: data.phone ?? '',
+      email: data.email ?? '',
+      location: data.location ?? '',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function onSubmit(values: FormValues) {
+    onUpdate(values);
+    toast.custom(
+      () => (
+        <div className="grid w-full max-w-md items-start gap-4">
+          <Alert>
+            <CheckCircle2Icon />
+            <AlertTitle>Details saved successfully!</AlertTitle>
+            <AlertDescription>Let&apos;s calculate your land size.</AlertDescription>
+          </Alert>
+        </div>
+      ),
+      { position: 'bottom-right' }
+    );
+    onNext();
+  }
+
+  function onInvalid(errors: FieldErrors<FormValues>) {
+    const messages = Object.values(errors)
+      .map((e) => e?.message)
+      .filter((m): m is string => Boolean(m));
+    toast.custom(
+      () => (
+        <div className="grid w-full max-w-md items-start gap-4">
+          <Alert>
+            <InfoIcon />
+            <AlertTitle>Please complete the missing details</AlertTitle>
+            <AlertDescription>
+              <ul className="list-disc space-y-0.5 pl-4">
+                {messages.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        </div>
+      ),
+      { position: 'bottom-right' }
+    );
+  }
 
   return (
-    <div>
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Let's Start Your House Estimation</h2>
-      <p className="text-gray-600 mb-8">Please provide your contact details to begin</p>
+    <Card className="w-full max-w-xl mx-auto shadow-none border-0 bg-transparent flex flex-col justify-center">
+      <CardHeader className="px-0 pt-0">
+        <CardTitle className="text-3xl font-bold">Let&apos;s Start Your House Estimation</CardTitle>
+        <CardDescription>Please provide your contact details to begin</CardDescription>
+      </CardHeader>
+      <CardContent className="px-0 pb-0">
+        <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="w-full space-y-6">
+          <Controller
+            name="fullName"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <Input
+                    {...field}
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your full name"
+                    autoComplete="name"
+                    className="pl-10"
+                  />
+                </div>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-          <div className="relative">
-            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              value={data.fullName}
-              onChange={(e) => onUpdate({ ...data, fullName: e.target.value })}
-              placeholder="Enter your full name"
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ED9420] focus:border-[#ED9420] outline-none transition-all"
-              required
-            />
-          </div>
-        </div>
+          <Controller
+            name="phone"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Phone Number</FieldLabel>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="tel"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="+94 77 XXX XXXX"
+                    autoComplete="tel"
+                    className="pl-10"
+                  />
+                </div>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
 
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-          <div className="relative">
-            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="tel"
-              value={data.phone}
-              onChange={(e) => onUpdate({ ...data, phone: e.target.value })}
-              placeholder="07X XXX XXXX"
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ED9420] focus:border-[#ED9420] outline-none transition-all"
-              required
-            />
-          </div>
-        </div>
+          <Controller
+            name="email"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Email Address</FieldLabel>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="email"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="example@gmail.com"
+                    autoComplete="email"
+                    className="pl-10"
+                  />
+                </div>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
 
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="email"
-              value={data.email}
-              onChange={(e) => onUpdate({ ...data, email: e.target.value })}
-              placeholder="example@gmail.com"
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ED9420] focus:border-[#ED9420] outline-none transition-all"
-              required
-            />
-          </div>
-        </div>
+          <Controller
+            name="location"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Building Location</FieldLabel>
+                <LocationAutocomplete
+                  id={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  invalid={fieldState.invalid}
+                  placeholder="Search your building location in Sri Lanka"
+                />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
 
-        <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Building Location</label>
-          <div className="relative">
-            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              value={data.location}
-              onChange={(e) => onUpdate({ ...data, location: e.target.value })}
-              placeholder="Enter your building location"
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ED9420] focus:border-[#ED9420] outline-none transition-all"
-              required
-            />
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-[#ED9420] hover:bg-[#d67f12] text-white font-semibold py-4 rounded-lg transition-colors duration-200 mt-8"
-        >
-          Next Step
-        </button>
-      </form>
-    </div>
+          <Button type="submit" className="w-full bg-[#ED9420] hover:bg-[#d67f12] py-6 text-base font-semibold">
+            Next Step
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,6 +1,12 @@
-import { ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
+'use client';
+
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { CalculatorData } from '../App';
 import { FloorPlanning } from './FloorPlanning';
+import { Alert, AlertTitle, AlertDescription } from './ui/alert';
+import { Button } from './ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { AlertCircle } from 'lucide-react';
 
 type Props = {
   data: CalculatorData;
@@ -29,65 +35,59 @@ export function SpacePlanningStep({ data, onUpdate, onNext, onPrev }: Props) {
 
   const totalSqft = calculateTotalSqft();
   const remainingSqft = allowedSqft - totalSqft;
-  const usagePercentage = (totalSqft / allowedSqft) * 100;
   const isExceeded = totalSqft > allowedSqft;
 
   const floorNames = ['Ground Floor', 'First Floor', 'Second Floor'];
 
   return (
-    <div>
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Plan Your House Spaces</h2>
-      <p className="text-gray-600 mb-8">Select the number of each room type for your house</p>
+    <Card className="w-full mx-auto shadow-none border-0 flex flex-col justify-center">
+      <CardHeader className="px-0 pt-0">
+        <CardTitle className="text-3xl font-bold">Plan Your House Spaces</CardTitle>
+        <CardDescription>Select the number of each room type for your house</CardDescription>
+      </CardHeader>
+      <CardContent className="px-0 pb-0 space-y-6">
+        {isExceeded && (
+          <Alert variant="destructive">
+            <AlertCircle />
+            <AlertTitle>Land Size Limit Exceeded!</AlertTitle>
+            <AlertDescription>
+              You cannot add more areas. Your land size limit has been exceeded by{' '}
+              {Math.abs(remainingSqft).toLocaleString()} sqft.
+            </AlertDescription>
+          </Alert>
+        )}
 
-      {isExceeded && (
-        <div className="bg-red-50 border-2 border-red-500 rounded-lg p-4 mb-6 animate-shake">
-          <div className="flex items-center gap-3">
-            <AlertCircle className="text-red-500" size={24} />
-            <div>
-              <p className="font-semibold text-red-900">Land Size Limit Exceeded!</p>
-              <p className="text-sm text-red-700">
-                You cannot add more areas. Your land size limit has been exceeded by{' '}
-                {Math.abs(remainingSqft).toLocaleString()} sqft.
-              </p>
-            </div>
-          </div>
+        <div className="space-y-6">
+          {data.floors.map((floor, index) => (
+            <FloorPlanning
+              key={index}
+              floorName={floorNames[index]}
+              floorData={floor}
+              onUpdate={(updatedFloor) => {
+                const newFloors = [...data.floors];
+                newFloors[index] = updatedFloor;
+                onUpdate(newFloors);
+              }}
+            />
+          ))}
         </div>
-      )}
 
-      <div className="space-y-6 mb-8">
-        {data.floors.map((floor, index) => (
-          <FloorPlanning
-            key={index}
-            floorName={floorNames[index]}
-            floorData={floor}
-            onUpdate={(updatedFloor) => {
-              const newFloors = [...data.floors];
-              newFloors[index] = updatedFloor;
-              onUpdate(newFloors);
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="flex gap-4">
-        <button
-          type="button"
-          onClick={onPrev}
-          className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <ArrowLeft size={20} />
-          Previous
-        </button>
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={isExceeded || totalSqft === 0}
-          className="flex-1 flex items-center justify-center gap-2 bg-[#ED9420] hover:bg-[#d67f12] text-white font-semibold py-3 rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          Next Step
-          <ArrowRight size={20} />
-        </button>
-      </div>
-    </div>
+        <div className="flex gap-4">
+          <Button type="button" variant="outline" onClick={onPrev} className="px-6 py-6">
+            <ArrowLeft size={20} />
+            Previous
+          </Button>
+          <Button
+            type="button"
+            onClick={onNext}
+            disabled={isExceeded || totalSqft === 0}
+            className="flex-1 bg-[#ED9420] hover:bg-[#d67f12] py-6 text-base font-semibold disabled:bg-gray-300"
+          >
+            Next Step
+            <ArrowRight size={20} />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
