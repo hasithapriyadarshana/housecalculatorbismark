@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RegistrationStep } from './components/RegistrationStep';
 import { LandSizeStep } from './components/LandSizeStep';
 import { StorySelectionStep } from './components/StorySelectionStep';
@@ -7,8 +7,21 @@ import { RoofSelectionStep } from './components/RoofSelectionStep';
 import { SummaryStep } from './components/SummaryStep';
 import { ProgressBar } from './components/ProgressBar';
 import { LiveSummary } from './components/LiveSummary';
+import { AdminDashboard } from './components/AdminDashboard';
+import { AdminLogin } from './components/AdminLogin';
 import { SiteHeader } from './components/SiteHeader';
 import { Toaster } from './components/ui/sonner';
+import { isAdminUnlocked, lockAdmin } from './lib/adminAuth';
+import { newSessionId, upsertCalculation } from './lib/calculationStore';
+
+/** Admin is only reachable via the /admin URL (or #/admin) — no visible link. */
+function isAdminRoute(): boolean {
+  if (typeof window === 'undefined') return false;
+  return (
+    window.location.pathname.replace(/\/$/, '') === '/admin' ||
+    window.location.hash === '#/admin'
+  );
+}
 
 export type UserData = {
   fullName: string;
@@ -37,6 +50,11 @@ export type CalculatorData = {
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [view, setView] = useState<'calculator' | 'admin'>(() =>
+    isAdminRoute() ? 'admin' : 'calculator'
+  );
+  const [adminUnlocked, setAdminUnlocked] = useState(() => isAdminUnlocked());
+  const [sessionId] = useState(() => newSessionId());
   const [data, setData] = useState<CalculatorData>({
     user: { fullName: '', phone: '', email: '', location: '' },
     perches: 0,
@@ -63,6 +81,25 @@ export default function App() {
     setData((prev) => ({ ...prev, ...updates }));
   };
 
+  // Persist every completed estimate so the admin dashboard can list it
+  useEffect(() => {
+    if (currentStep === 6) {
+      upsertCalculation(sessionId, data);
+    }
+  }, [currentStep, data, sessionId]);
+
+  // Keep view in sync with the URL (/admin or #/admin)
+  useEffect(() => {
+    const sync = () => setView(isAdminRoute() ? 'admin' : 'calculator');
+    sync();
+    window.addEventListener('hashchange', sync);
+    window.addEventListener('popstate', sync);
+    return () => {
+      window.removeEventListener('hashchange', sync);
+      window.removeEventListener('popstate', sync);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-neutral-950">
       <Toaster position="top-center" richColors />
@@ -73,12 +110,29 @@ export default function App() {
           <p className="text-gray-600 dark:text-neutral-400">Plan your dream house with accurate cost estimates</p>
         </div>
 
-        <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        {view === 'admin' ? (
+          adminUnlocked ? (
+            <AdminDashboard
+              onBack={() => setView('calculator')}
+              onLock={() => {
+                lockAdmin();
+                setAdminUnlocked(false);
+              }}
+            />
+          ) : (
+            <AdminLogin
+              onBack={() => setView('calculator')}
+              onSuccess={() => setAdminUnlocked(true)}
+            />
+          )
+        ) : (
+          <>
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 items-start">
           <div className={currentStep <= 2 ? 'lg:col-span-3' : 'lg:col-span-2'}>
             <div className={`${currentStep === 1 ? 'bg-[#171717]' : 'bg-white dark:bg-neutral-900'} rounded-lg shadow-lg p-8 flex justify-center`}>
-              <div className={`w-full max-w-2xl mx-auto flex flex-col justify-center min-h-[420px] ${currentStep === 1 ? 'dark' : ''}`}>
+              <div className={`w-full ${currentStep === 1 ? 'max-w-5xl' : 'max-w-2xl'} mx-auto flex flex-col justify-center min-h-[420px] ${currentStep === 1 ? 'dark' : ''}`}>
               {currentStep === 1 && (
                 <RegistrationStep
                   data={data.user}
@@ -125,7 +179,7 @@ export default function App() {
                 />
               )}
               {currentStep === 6 && (
-                <SummaryStep data={data} onPrev={prevStep} />
+                <SummaryStep data={data} quoteId={sessionId} onPrev={prevStep} />
               )}
               </div>
             </div>
@@ -137,6 +191,8 @@ export default function App() {
             </div>
           )}
         </div>
+          </>
+        )}
       </div>
     </div>
   );

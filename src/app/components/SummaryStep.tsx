@@ -1,12 +1,27 @@
 import { ArrowLeft, Download, Mail } from 'lucide-react';
+import { toast } from 'sonner';
 import { CalculatorData } from '../App';
 
 type Props = {
   data: CalculatorData;
+  quoteId: string;
   onPrev: () => void;
 };
 
-export function SummaryStep({ data, onPrev }: Props) {
+export function SummaryStep({ data, quoteId, onPrev }: Props) {
+
+  const handleDownloadPdf = () => {
+    toast.promise(
+      import('../lib/quotePdf').then(({ downloadQuotePdf }) =>
+        downloadQuotePdf(data, quoteId)
+      ),
+      {
+        loading: 'Generating your quote PDF...',
+        success: 'Quote PDF downloaded.',
+        error: 'Could not generate the PDF. Please try again.',
+      }
+    );
+  };
   const totalLandSqft = data.perches * 272.25;
   const usableLandSqft = totalLandSqft * 0.6;
   const allowedSqft = usableLandSqft * data.stories;
@@ -158,6 +173,7 @@ export function SummaryStep({ data, onPrev }: Props) {
           </button>
           <button
             type="button"
+            onClick={handleDownloadPdf}
             className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors"
           >
             <Download size={20} />

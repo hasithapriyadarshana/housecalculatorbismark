@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Field, FieldError, FieldLabel } from './ui/field';
 import { Input } from './ui/input';
 import { LocationAutocomplete } from './LocationAutocomplete';
+import { ConstructionIllustration } from './ConstructionIllustration';
 import { UserData } from '../App';
 
 const formSchema = z.object({
@@ -100,8 +101,11 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
   }
 
   return (
-    <Card className="w-full max-w-xl mx-auto shadow-none border-0 bg-transparent flex flex-col justify-center">
-      <CardHeader className="px-0 pt-0">
+    <Card className="w-full max-w-4xl mx-auto shadow-none border-0 bg-transparent flex flex-col justify-center">
+      <CardContent className="px-0 pb-0">
+        <div className="grid w-full items-center gap-10 md:grid-cols-2">
+          <div>
+            <CardHeader className="px-0 pt-0">
         <CardTitle className="text-3xl font-bold">Let&apos;s Start Your House Estimation</CardTitle>
         <CardDescription>Please provide your contact details to begin</CardDescription>
       </CardHeader>
@@ -198,6 +202,12 @@ export function RegistrationStep({ data, onUpdate, onNext }: Props) {
             Next Step
           </Button>
         </form>
+        </CardContent>
+          </div>
+          <div className="mx-auto w-full max-w-sm md:max-w-none">
+            <ConstructionIllustration />
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
