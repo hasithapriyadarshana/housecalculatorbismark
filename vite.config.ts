@@ -33,4 +33,23 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          // Lazy-loaded on demand via dynamic import() — never in the initial bundle
+          if (id.includes('html2canvas')) return 'pdf-canvas';
+          if (id.includes('jspdf')) return 'pdf';
+          if (id.includes('@radix-ui')) return 'radix';
+          if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod'))
+            return 'forms';
+          if (/node_modules[\\/](react|react-dom|scheduler)([\\/]|$)/.test(id))
+            return 'react-vendor';
+          return undefined;
+        },
+      },
+    },
+  },
 })

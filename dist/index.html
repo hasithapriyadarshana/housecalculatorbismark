@@ -1,0 +1,29 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Create design prototype</title>
+      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
+      <script>
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      </script>
+      <script type="module" crossorigin src="/assets/index-De0Gg4Zx.js"></script>
+      <link rel="modulepreload" crossorigin href="/assets/react-vendor-DsKR4hU1.js">
+      <link rel="modulepreload" crossorigin href="/assets/forms-B_tmNvgm.js">
+      <link rel="modulepreload" crossorigin href="/assets/radix-_aZ0F6H1.js">
+      <link rel="modulepreload" crossorigin href="/assets/pdf-BXn7C_H1.js">
+      <link rel="stylesheet" crossorigin href="/assets/index-CuM4247W.css">
+    </head>
+
+    <body>
+      <div id="root"></div>
+    </body>
+  </html>
+  
